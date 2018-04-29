@@ -272,6 +272,7 @@ on_negotiation_needed (GstElement * element, gpointer user_data)
 #define STUN_SERVER " stun-server=stun://stun.l.google.com:19302 "
 #define RTP_CAPS_OPUS "application/x-rtp,media=audio,encoding-name=OPUS,payload="
 #define RTP_CAPS_VP8 "application/x-rtp,media=video,encoding-name=VP8,payload="
+#define RTP_CAPS_H264 "application/x-rtp,media=video,encoding-name=H264,payload="
 
 static gboolean
 start_pipeline (void)
@@ -281,8 +282,8 @@ start_pipeline (void)
 
   pipe1 =
       gst_parse_launch ("webrtcbin name=sendrecv " STUN_SERVER
-      "videotestsrc pattern=ball ! videoconvert ! queue ! vp8enc deadline=1 ! rtpvp8pay ! "
-      "queue ! " RTP_CAPS_VP8 "96 ! sendrecv. "
+      "videotestsrc pattern=ball ! videoconvert ! queue ! x264enc tune=zerolatency ! rtph264pay ! "
+      "queue ! " RTP_CAPS_H264 "96 ! sendrecv. "
       "audiotestsrc wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
       "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ",
       &error);
@@ -643,6 +644,7 @@ main (int argc, char *argv[])
       strict_ssl = FALSE;
     gst_uri_unref (uri);
   }
+  strict_ssl = FALSE;
 
   loop = g_main_loop_new (NULL, FALSE);
 

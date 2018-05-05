@@ -282,10 +282,8 @@ start_pipeline (void)
 
   pipe1 =
       gst_parse_launch ("webrtcbin name=sendrecv " STUN_SERVER
-      "videotestsrc pattern=ball ! videoconvert ! queue ! x264enc tune=zerolatency ! rtph264pay ! "
-      "queue ! " RTP_CAPS_H264 "96 ! sendrecv. "
-      "audiotestsrc wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
-      "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ",
+      " v4l2src  do-timestamp=true ! decodebin !  videoconvert ! queue ! vp8enc deadline=1 ! rtpvp8pay ! "
+      "queue ! " RTP_CAPS_VP8 "96 ! sendrecv. ",
       &error);
 
   if (error) {

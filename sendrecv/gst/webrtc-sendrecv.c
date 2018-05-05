@@ -158,9 +158,9 @@ on_incoming_decodebin_stream (GstElement * decodebin, GstPad * pad,
   name = gst_structure_get_name (gst_caps_get_structure (caps, 0));
 
   if (g_str_has_prefix (name, "video")) {
-    handle_media_stream (pad, pipe, "videoconvert", "autovideosink");
+    // handle_media_stream (pad, pipe, "videoconvert", "autovideosink");
   } else if (g_str_has_prefix (name, "audio")) {
-    handle_media_stream (pad, pipe, "audioconvert", "autoaudiosink");
+    // handle_media_stream (pad, pipe, "audioconvert", "autoaudiosink");
   } else {
     g_printerr ("Unknown pad %s, ignoring", GST_PAD_NAME (pad));
   }
@@ -282,8 +282,10 @@ start_pipeline (void)
 
   pipe1 =
       gst_parse_launch ("webrtcbin name=sendrecv " STUN_SERVER
-      " v4l2src  do-timestamp=true ! decodebin !  videoconvert ! queue ! vp8enc deadline=1 ! rtpvp8pay ! "
-      "queue ! " RTP_CAPS_VP8 "96 ! sendrecv. ",
+      "v4l2src ! video/x-h264,width=640,height=480,framerate=5/1 ! "
+      "decodebin !  videoconvert ! "
+      "vp8enc deadline=1 ! rtpvp8pay ! "      
+      RTP_CAPS_VP8 "96 ! sendrecv. ",
       &error);
 
   if (error) {

@@ -45,7 +45,7 @@ static SoupWebsocketConnection *ws_conn = NULL;
 static enum AppState app_state = 0;
 static const gchar *peer_id = NULL;
 static const gchar *server_url = "wss://hexy.westeurope.cloudapp.azure.com:8443/";
-static gboolean strict_ssl = TRUE;
+static gboolean strict_ssl = FALSE;
 
 static GOptionEntry entries[] =
 {

@@ -44,7 +44,7 @@ static GstElement *pipe1, *webrtc1;
 static SoupWebsocketConnection *ws_conn = NULL;
 static enum AppState app_state = 0;
 static const gchar *peer_id = NULL;
-static const gchar *server_url = "wss://webrtc.nirbheek.in:8443";
+static const gchar *server_url = "wss://hexy.westeurope.cloudapp.azure.com:8443/";
 static gboolean strict_ssl = TRUE;
 
 static GOptionEntry entries[] =

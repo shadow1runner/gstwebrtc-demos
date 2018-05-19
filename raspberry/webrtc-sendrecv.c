@@ -44,8 +44,8 @@ static GstElement *pipe1, *webrtc1;
 static SoupWebsocketConnection *ws_conn = NULL;
 static enum AppState app_state = 0;
 static const gchar *peer_id = NULL;
-static const gchar *server_url = "wss://hexy.westeurope.cloudapp.azure.com:8443/";
-static gboolean strict_ssl = FALSE;
+static const gchar *server_url = "wss://webrtc.nirbheek.in:8443";
+static gboolean strict_ssl = TRUE;
 
 static GOptionEntry entries[] =
 {
@@ -158,9 +158,9 @@ on_incoming_decodebin_stream (GstElement * decodebin, GstPad * pad,
   name = gst_structure_get_name (gst_caps_get_structure (caps, 0));
 
   if (g_str_has_prefix (name, "video")) {
-    handle_media_stream (pad, pipe, "videoconvert", "autovideosink");
+    // handle_media_stream (pad, pipe, "videoconvert", "autovideosink");
   } else if (g_str_has_prefix (name, "audio")) {
-    handle_media_stream (pad, pipe, "audioconvert", "autoaudiosink");
+    // handle_media_stream (pad, pipe, "audioconvert", "autoaudiosink");
   } else {
     g_printerr ("Unknown pad %s, ignoring", GST_PAD_NAME (pad));
   }
@@ -272,6 +272,7 @@ on_negotiation_needed (GstElement * element, gpointer user_data)
 #define STUN_SERVER " stun-server=stun://stun.l.google.com:19302 "
 #define RTP_CAPS_OPUS "application/x-rtp,media=audio,encoding-name=OPUS,payload="
 #define RTP_CAPS_VP8 "application/x-rtp,media=video,encoding-name=VP8,payload="
+#define RTP_CAPS_H264 "application/x-rtp,media=video,encoding-name=H264,payload="
 
 static gboolean
 start_pipeline (void)
@@ -281,10 +282,10 @@ start_pipeline (void)
 
   pipe1 =
       gst_parse_launch ("webrtcbin name=sendrecv " STUN_SERVER
-      "videotestsrc pattern=ball ! videoconvert ! queue ! vp8enc deadline=1 ! rtpvp8pay ! "
-      "queue ! " RTP_CAPS_VP8 "96 ! sendrecv. "
-      "audiotestsrc wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
-      "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ",
+      "v4l2src ! video/x-h264,width=640,height=480,framerate=5/1 ! "
+      "decodebin !  videoconvert ! "
+      "vp8enc deadline=1 ! rtpvp8pay ! "      
+      RTP_CAPS_VP8 "96 ! sendrecv. ",
       &error);
 
   if (error) {
@@ -643,6 +644,7 @@ main (int argc, char *argv[])
       strict_ssl = FALSE;
     gst_uri_unref (uri);
   }
+  strict_ssl = FALSE;
 
   loop = g_main_loop_new (NULL, FALSE);
 
